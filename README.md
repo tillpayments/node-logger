@@ -19,10 +19,9 @@ const Logger = require('@tillpayments/node-logger');
 /**
  * Create a logger by config object:
  * - category {string} - [optional] logger category name, default to value "main"
- * - transports {array} - array of transport definitions
+ * - transports {array} - array of transport definitions, optional attributes see inline comment
  *   - type: ['file', 'console']
  *   - level: <log_level>
- *   - filePath: file log path, only applicable to file type transport
  */
 const log = Logger({
   transports: [{
@@ -31,10 +30,9 @@ const log = Logger({
   }, {
     type: 'file',
     level: 'debug',
-    // filePath: '/tmp/test.log',
-    // KB
-    writeJson: true,
-    maxSize: '2',
+    writeJson: false, // true to wrap whole log line into JSON object
+    maxSize: 1000, // 1000 KB per file
+    maxRotation: 10, // keep 10 historical rotation logs
     filePath: './test.log',
   }],
 });

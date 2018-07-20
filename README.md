@@ -58,7 +58,7 @@ log.error('error message');
 log.fatal('fatal message');
 
 // set dateFormatter:
-log.setDateFormatter((d) => `${currentDate.getTime()}`);
+log.setDateFormatter((d) => `${d.getTime()}`); // where d is a Date object
 // remove customised dateFormatter
 log.setDateFormatter();
 ```

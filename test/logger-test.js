@@ -46,6 +46,13 @@ test('build log string with object data', t => {
   log.log('info', 'build log string with object data');
 });
 
+test('build log string with array data', t => {
+  const logString = log.buildLogString('info', 'foo', { data: arrayData });
+  const timestamp = log.getCurrentTimestamp();
+	t.is(logString, `${timestamp} [INFO] (main)	foo, ["foo","bar"]`);
+  log.log('info', 'build log string with array data');
+});
+
 log.log('all', 'all message');
 log.log('debug', 'debug message');
 log.log('info', 'info message');

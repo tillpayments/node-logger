@@ -1,1 +1,3 @@
-module.exports = require('./lib/logger.js');
+const Logger = require('./lib/Logger');
+
+module.exports = config => new Logger(config);

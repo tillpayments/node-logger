@@ -1,55 +1,74 @@
-# node-logger
+# @tillpayments/node-logger
+Log message and data in nodejs processes
 
-## Example
+### Install
+```
+npm i @tillpayments/node-logger --save
+```
+
+### Definitions
+Log Levels:
+```
+LOG_LEVELS = ['all', 'debug', 'info', 'warn', 'error', 'fatal'];
+```
+
+### Usage
 ``` js
-const logger = require('logger');
+const Logger = require('@tillpayments/node-logger');
 
-const log = logger.createLogger({
-  category: 'cashbox',
-  dateFormat: 'yyyy-mm-dd\'T\'HH:MM:ssp',
+/**
+ * Create a logger by config object:
+ * - category {string} - [optional] logger category name, default to value "main"
+ * - transports {array} - array of transport definitions, optional attributes see inline comment
+ *   - type: ['file', 'console']
+ *   - level: <log_level>
+ */
+const log = Logger({
   transports: [{
     type: 'console',
     level: 'debug',
   }, {
     type: 'file',
     level: 'debug',
-    // filePath: '/tmp/test.log',
-    // KB
-    writeJson: true,
-    maxSize: '2',
+    writeJson: false, // true to wrap whole log line into JSON object
+    maxSize: 1000, // 1000 KB per file
+    maxRotation: 10, // keep 10 historical rotation logs
     filePath: './test.log',
   }],
 });
 
-log.info('info', {test:'val'})
+const data = { key: 'value' };
 
-log.log('error', 'error message');
-log.log('warn', 'warning message');
-log.log('info', 'info message');
-log.log('verbose', 'verbose message');
+// message is mandatory, data is optional
+log.log('all', 'all message', data);
 log.log('debug', 'debug message');
-log.log('silogy', 'silogy message');
+log.log('info', 'info message');
+log.log('warn', 'warn message');
+log.log('error', 'error message');
+log.log('fatal', 'fatal message');
 
-log.log('info', 'transaction completed', {
-transaction: {
-  a: 1,
-  b: 2,
-},
-deposits: []
-})
-log.info('transaction updated', {
-message: 'message',
-attr1: 'attribute 1',
-attr2: 'attribute 2',
-});
+log.all('all message', data);
+log.debug('debug message');
+log.info('info message');
+log.warn('warn message');
+log.error('error message');
+log.fatal('fatal message');
+```
 
-// logging error
-const err = new Error('test error');
-log.error('some error', {error: err.toString()});
-log.info('some info', {some: 'data', other: {some: null}});
+##### create child logger
+Create child logger with a different log category
+``` js
+const cLog = log.getChildLogger('child');
 
-// child logger with context
-cl = log.getChildLogger('gps', {gpsId: 'gps01'});
-cl.log('info', 'something else', {and: 123, obj: {some: 'object', deeper: {object: 'here'}}});
-cl.info('something');
+const context = { key: 'value' };
+const cLog2 = log.getChildLogger('child', context);
+
+const data = { key: 'value' };
+cLog.info('message', data);
+cLog2.info('message', data);
+```
+
+### Manual Test
+```
+node test/logger-test.js
 ```

@@ -4,9 +4,12 @@
   "description": "message and data logger for nodejs processes",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "ava test"
   },
   "author": "tillpayments",
   "license": "ISC",
-  "dependencies": {}
+  "dependencies": {},
+  "devDependencies": {
+    "ava": "1.0.0-beta.6"
+  }
 }

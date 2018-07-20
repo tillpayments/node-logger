@@ -1,5 +1,8 @@
 # @tillpayments/node-logger
-Log message and data in nodejs processes
+Message and data logger for nodejs. Features:
+- Multiple transport channels
+- Log rotation
+- Customised date formatter
 
 ### Install
 ```
@@ -32,7 +35,7 @@ const log = Logger({
     level: 'debug',
     writeJson: false, // true to wrap whole log line into JSON object
     maxSize: 1000, // 1000 KB per file
-    maxRotation: 10, // keep 10 historical rotation logs
+    maxRotation: 5, // keep 5 historical rotation logs
     filePath: './test.log',
   }],
 });
@@ -53,6 +56,11 @@ log.info('info message');
 log.warn('warn message');
 log.error('error message');
 log.fatal('fatal message');
+
+// set dateFormatter:
+log.setDateFormatter((d) => `${currentDate.getTime()}`);
+// remove customised dateFormatter
+log.setDateFormatter();
 ```
 
 ##### create child logger

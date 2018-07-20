@@ -15,43 +15,45 @@ const log = nodeLogger({
 const objectData = { key: 'value', nestedData: { nestedValue: [1, 2, 3] } };
 const arrayData = ['foo', 'bar'];
 
-test('override date formatter static', t => {
-  log.setDateFormatter((d) => `my-date`);
+/* eslint-disable quotes */
+test('override date formatter static', (t) => {
+  log.setDateFormatter(() => 'my-date');
   const logString = log.buildLogString('info', 'foo', {});
-	t.is(logString, 'my-date [INFO] (main)	foo');
+  t.is(logString, 'my-date [INFO] (main)\tfoo');
   log.log('info', 'override date formatter static');
   log.setDateFormatter();
 });
 
-test('override date formatter dynamic', t => {
+test('override date formatter dynamic', (t) => {
   const currentDate = new Date();
-  log.setDateFormatter((d) => `${currentDate.getTime()}`);
+  log.setDateFormatter(() => `${currentDate.getTime()}`);
   const logString = log.buildLogString('info', 'foo', {});
-	t.is(logString, `${currentDate.getTime()} [INFO] (main)	foo`);
-	log.log('info', 'override date formatter dynamic');
+  t.is(logString, `${currentDate.getTime()} [INFO] (main)\tfoo`);
+  log.log('info', 'override date formatter dynamic');
   log.setDateFormatter();
 });
 
-test('build log string without data', t => {
+test('build log string without data', (t) => {
   const logString = log.buildLogString('info', 'foo', {});
   const timestamp = log.getCurrentTimestamp();
-	t.is(logString, `${timestamp} [INFO] (main)	foo`);
+  t.is(logString, `${timestamp} [INFO] (main)\tfoo`);
   log.log('info', 'build log string without data');
 });
 
-test('build log string with object data', t => {
+test('build log string with object data', (t) => {
   const logString = log.buildLogString('info', 'foo', { data: objectData });
   const timestamp = log.getCurrentTimestamp();
-	t.is(logString, `${timestamp} [INFO] (main)	foo, key="value", nestedData={"nestedValue":[1,2,3]}`);
+  t.is(logString, `${timestamp} [INFO] (main)\tfoo, key="value", nestedData={"nestedValue":[1,2,3]}`);
   log.log('info', 'build log string with object data');
 });
 
-test('build log string with array data', t => {
+test('build log string with array data', (t) => {
   const logString = log.buildLogString('info', 'foo', { data: arrayData });
   const timestamp = log.getCurrentTimestamp();
-	t.is(logString, `${timestamp} [INFO] (main)	foo, ["foo","bar"]`);
+  t.is(logString, `${timestamp} [INFO] (main)\tfoo, ["foo","bar"]`);
   log.log('info', 'build log string with array data');
 });
+/* eslint-enable quotes */
 
 log.log('all', 'all message');
 log.log('debug', 'debug message');

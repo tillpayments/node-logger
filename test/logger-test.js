@@ -12,15 +12,31 @@ const log = nodeLogger({
   }],
 });
 
+const stringData = 'a test string';
+const numberData = 123.45;
+const booleanData = true;
 const objectData = { key: 'value', nestedData: { nestedValue: [1, 2, 3] } };
 const arrayData = ['foo', 'bar'];
 
-/* eslint-disable quotes */
+// log level tests
+const testLogLevel = (t, level) => {
+	const logString = log.buildLogString(level, 'level message', {});
+  const timestamp = log.getCurrentTimestamp();
+  t.is(logString, `${timestamp} [${level.toUpperCase()}] (main)\tlevel message`);
+}
+
+test('log level test - all', testLogLevel, 'all');
+test('log level test - debug', testLogLevel, 'debug');
+test('log level test - info', testLogLevel, 'info');
+test('log level test - warn', testLogLevel, 'warn');
+test('log level test - error', testLogLevel, 'error');
+test('log level test - fatal', testLogLevel, 'fatal');
+
+// date formatter tests
 test('override date formatter static', (t) => {
   log.setDateFormatter(() => 'my-date');
   const logString = log.buildLogString('info', 'foo', {});
   t.is(logString, 'my-date [INFO] (main)\tfoo');
-  log.log('info', 'override date formatter static');
   log.setDateFormatter();
 });
 
@@ -29,31 +45,47 @@ test('override date formatter dynamic', (t) => {
   log.setDateFormatter(() => `${currentDate.getTime()}`);
   const logString = log.buildLogString('info', 'foo', {});
   t.is(logString, `${currentDate.getTime()} [INFO] (main)\tfoo`);
-  log.log('info', 'override date formatter dynamic');
   log.setDateFormatter();
 });
 
+// log data tests
 test('build log string without data', (t) => {
   const logString = log.buildLogString('info', 'foo', {});
   const timestamp = log.getCurrentTimestamp();
   t.is(logString, `${timestamp} [INFO] (main)\tfoo`);
-  log.log('info', 'build log string without data');
+});
+
+test('build log string with string data', (t) => {
+  const logString = log.buildLogString('info', 'foo', { data: stringData });
+  const timestamp = log.getCurrentTimestamp();
+  t.is(logString, `${timestamp} [INFO] (main)\tfoo, ${stringData}`);
+});
+
+test('build log string with number data', (t) => {
+  const logString = log.buildLogString('info', 'foo', { data: numberData });
+  const timestamp = log.getCurrentTimestamp();
+  t.is(logString, `${timestamp} [INFO] (main)\tfoo, ${numberData}`);
+});
+
+test('build log string with boolean data', (t) => {
+  const logString = log.buildLogString('info', 'foo', { data: booleanData });
+  const timestamp = log.getCurrentTimestamp();
+  t.is(logString, `${timestamp} [INFO] (main)\tfoo, ${booleanData}`);
 });
 
 test('build log string with object data', (t) => {
   const logString = log.buildLogString('info', 'foo', { data: objectData });
   const timestamp = log.getCurrentTimestamp();
+  /* eslint-disable-next-line quotes */
   t.is(logString, `${timestamp} [INFO] (main)\tfoo, key="value", nestedData={"nestedValue":[1,2,3]}`);
-  log.log('info', 'build log string with object data');
 });
 
 test('build log string with array data', (t) => {
   const logString = log.buildLogString('info', 'foo', { data: arrayData });
   const timestamp = log.getCurrentTimestamp();
+  /* eslint-disable-next-line quotes */
   t.is(logString, `${timestamp} [INFO] (main)\tfoo, ["foo","bar"]`);
-  log.log('info', 'build log string with array data');
 });
-/* eslint-enable quotes */
 
 log.log('all', 'all message');
 log.log('debug', 'debug message');

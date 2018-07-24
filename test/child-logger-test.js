@@ -3,40 +3,41 @@ import nodeLogger from '../index';
 
 const log = nodeLogger({
   transports: [{
-    type: 'console',
-    level: 'info',
-  }, {
     type: 'file',
     level: 'all',
     filePath: './test.log',
   }],
 });
-const cLog1 = log.getChildLogger('child1');
-const cLog2 = log.getChildLogger('child2', { name: 'c2' });
 
+const cLog1 = log.getChildLogger('child1');
+const cLog2Context = { name: 'c2' };
+const cLog2 = log.getChildLogger('child2', cLog2Context);
+
+const message = 'child log message';
 const objectData = { key: 'value', nestedData: { nestedValue: [1, 2, 3] } };
 const arrayData = ['foo', 'bar'];
 
-// child logger without context
-//test('child logger without context, log without data', (t) => {
-//  const logString = cLog1.buildLogString('info', 'foo', {});
-//  const timestamp = cLog1.getCurrentTimestamp();
-//  t.pass();
-//  t.is(logString, `${timestamp} [INFO] (child1)\tfoo`);
-//});
-//
-//test('child logger without context, log with object data', (t) => {
-//  const logString = cLog1.buildLogString('info', 'foo', { data: objectData });
-//  const timestamp = cLog1.getCurrentTimestamp();
-//  /* eslint-disable-next-line quotes */
-//  t.is(logString, `${timestamp} [INFO] (child1)\tfoo, key="value", nestedData={"nestedValue":[1,2,3]}`);
-//});
-//
-//test('build log string with array data', (t) => {
-//  const logString = cLog1.buildLogString('info', 'foo', { data: arrayData });
-//  const timestamp = cLog1.getCurrentTimestamp();
-//  /* eslint-disable-next-line quotes */
-//  t.is(logString, `${timestamp} [INFO] (child1)\tfoo, ["foo","bar"]`);
-//});
+test('child logger without context', (t) => {
+  t.plan(4);
+  log.addLogHandler((logData) => {
+    t.is(logData.level, 'info');
+    t.is(logData.category, 'child1');
+    t.is(logData.message, message);
+    t.is(logData.data, objectData);
+  });
+  cLog1.info(message, objectData);
+  log.clearLogHandlers();
+});
 
-// child logger with context
+test('child logger with context', (t) => {
+  t.plan(5);
+  log.addLogHandler((logData) => {
+    t.is(logData.level, 'warn');
+    t.is(logData.category, 'child2');
+    t.is(logData.message, message);
+    t.is(logData.data, arrayData);
+    t.is(logData.context, cLog2Context);
+  });
+  cLog2.warn(message, arrayData);
+  log.clearLogHandlers();
+});

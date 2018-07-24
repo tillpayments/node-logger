@@ -16,9 +16,9 @@ Log Levels:
 ```
 LOG_LEVELS = ['all', 'debug', 'info', 'warn', 'error', 'fatal'];
 ```
-Default date format
+Default date display format
 ```
-DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+`${date.getFullYear()}-${date.getMonth()}-${date.getDate()} ${date.toTimeString()}`;
 ```
 
 ### Usage

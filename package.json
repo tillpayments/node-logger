@@ -1,6 +1,6 @@
 {
   "name": "@tillpayments/node-logger",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "message and data logger for nodejs processes",
   "homepage": "https://github.com/tillpayments/node-logger",
   "main": "index.js",

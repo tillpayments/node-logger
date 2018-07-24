@@ -1,5 +1,10 @@
 # @tillpayments/node-logger
-Log message and data in nodejs processes
+Message and data logger for nodejs. Features:
+- Multiple transport channels
+- Child logger with different category name
+- Log rotation
+- Customised date formatter
+- External log handler (data in JSON object)
 
 ### Install
 ```
@@ -10,6 +15,10 @@ npm i @tillpayments/node-logger --save
 Log Levels:
 ```
 LOG_LEVELS = ['all', 'debug', 'info', 'warn', 'error', 'fatal'];
+```
+Default date display format
+```
+`${date.getFullYear()}-${date.getMonth()}-${date.getDate()} ${date.toTimeString()}`;
 ```
 
 ### Usage
@@ -32,11 +41,12 @@ const log = Logger({
     level: 'debug',
     writeJson: false, // true to wrap whole log line into JSON object
     maxSize: 1000, // 1000 KB per file
-    maxRotation: 10, // keep 10 historical rotation logs
+    maxRotation: 5, // keep 5 historical rotation logs
     filePath: './test.log',
   }],
 });
 
+// data can be: string, number, boolean, array, object
 const data = { key: 'value' };
 
 // message is mandatory, data is optional
@@ -55,7 +65,37 @@ log.error('error message');
 log.fatal('fatal message');
 ```
 
-##### create child logger
+Override dateFormatter:
+``` js
+// set dateFormatter
+log.setDateFormatter((d) => `${d.getTime()}`); // where d is a Date object
+// remove customised dateFormatter
+log.setDateFormatter();
+```
+
+Add external handler
+``` js
+const t = {
+  is(value, expected) { console.log(value === expected); },
+};
+const message = 'some message';
+const data = { some: 'data' };
+log.addLogHandler((logData) => {
+  t.is(logData.category, 'main');
+  t.is(logData.message, message);
+  t.is(logData.level, 'info');
+  t.is(logData.data, data);
+}, {
+  level: 'info', // optional config, handle specific level and above
+  category: 'main', // optional config, handle specific category
+});
+
+log.info(message, data);
+
+// clear handlers
+log.clearLogHandlers();
+```
+
 Create child logger with a different log category
 ``` js
 const cLog = log.getChildLogger('child');
@@ -68,7 +108,12 @@ cLog.info('message', data);
 cLog2.info('message', data);
 ```
 
-### Manual Test
+### Contribute
+Source code syntax check
 ```
-node test/logger-test.js
+npm run lint
+```
+Unit tests:
+```
+npm test
 ```

@@ -1,15 +1,20 @@
 {
   "name": "@tillpayments/node-logger",
-  "version": "0.0.1",
+  "version": "1.0.2",
   "description": "message and data logger for nodejs processes",
+  "homepage": "https://github.com/tillpayments/node-logger",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint index.js lib test",
     "test": "ava test"
   },
   "author": "tillpayments",
   "license": "ISC",
   "dependencies": {},
   "devDependencies": {
-    "ava": "1.0.0-beta.6"
+    "ava": "1.0.0-beta.6",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^13.0.0",
+    "eslint-plugin-import": "^2.13.0"
   }
 }

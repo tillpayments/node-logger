@@ -3,9 +3,6 @@ import nodeLogger from '../index';
 
 const log = nodeLogger({
   transports: [{
-    type: 'console',
-    level: 'info',
-  }, {
     type: 'file',
     level: 'all',
     filePath: './test.log',
@@ -20,10 +17,10 @@ const arrayData = ['foo', 'bar'];
 
 // log level tests
 const testLogLevel = (t, level) => {
-	const logString = log.buildLogString(level, 'level message', {});
+  const logString = log.buildLogString(level, 'level message', {});
   const timestamp = log.getCurrentTimestamp();
   t.is(logString, `${timestamp} [${level.toUpperCase()}] (main)\tlevel message`);
-}
+};
 
 test('log level test - all', testLogLevel, 'all');
 test('log level test - debug', testLogLevel, 'debug');
@@ -87,35 +84,93 @@ test('build log string with array data', (t) => {
   t.is(logString, `${timestamp} [INFO] (main)\tfoo, ["foo","bar"]`);
 });
 
-log.log('all', 'all message');
-log.log('debug', 'debug message');
-log.log('info', 'info message');
-log.log('warn', 'warn message');
-log.log('error', 'error message');
-log.log('fatal', 'fatal message');
-log.log('fatal', 'fatal message with object', objectData);
-log.log('fatal', 'fatal message with array', arrayData);
+// log handler test
+test('bad log handler test', (t) => {
+  log.addLogHandler('not a function');
+  t.is(log.logHandlers.length, 0);
+});
 
-log.all('all message');
-log.debug('debug message');
-log.info('info message');
-log.warn('warn message');
-log.error('error message');
-log.fatal('fatal message');
-log.fatal('fatal message with object', objectData);
-log.fatal('fatal message with array', arrayData);
+test('basic log handler test', (t) => {
+  t.plan(6);
 
-const cLog = log.getChildLogger('child');
-cLog.info('child info message');
-cLog.warn('child warn message');
-cLog.error('child error message');
-cLog.fatal('child fatal message with object', objectData);
-cLog.fatal('child fatal message with array', arrayData);
+  const message = 'test log handler';
+  log.addLogHandler((logData) => {
+    t.is(logData.category, 'main');
+    t.is(logData.message, message);
+    t.is(logData.level, 'info');
+    t.is(logData.data, arrayData);
+  });
+  t.is(log.logHandlers.length, 1);
 
+  log.info(message, arrayData);
+  log.clearLogHandlers();
+  t.is(log.logHandlers.length, 0);
+});
 
-const cLog2 = log.getChildLogger('child2', { name: 'child2' });
-cLog2.info('child info message');
-cLog2.warn('child warn message');
-cLog2.error('child error message');
-cLog2.fatal('child fatal message with object', objectData);
-cLog2.fatal('child fatal message with array', arrayData);
+test('level log handler test - match', (t) => {
+  t.plan(5);
+
+  let called = false;
+  const message = 'test log handler';
+  log.addLogHandler((logData) => {
+    called = true;
+    t.is(logData.category, 'main');
+    t.is(logData.message, message);
+    t.is(logData.level, 'info');
+    t.is(logData.data, arrayData);
+  }, {
+    level: 'info',
+  });
+
+  log.info(message, arrayData);
+  t.is(called, true);
+  log.clearLogHandlers();
+});
+
+test('level log handler test - not match', (t) => {
+  let called = false;
+  const message = 'test log handler';
+  log.addLogHandler(() => {
+    called = true;
+  }, {
+    level: 'warn',
+  });
+
+  log.info(message, arrayData);
+  t.is(called, false);
+  log.clearLogHandlers();
+});
+
+test('category log handler test - match', (t) => {
+  t.plan(5);
+
+  let called = false;
+  const message = 'test log handler';
+  log.addLogHandler((logData) => {
+    called = true;
+    t.is(logData.category, 'main');
+    t.is(logData.message, message);
+    t.is(logData.level, 'info');
+    t.is(logData.data, arrayData);
+  }, {
+    category: 'main',
+  });
+
+  log.info(message, arrayData);
+  t.is(called, true);
+  log.clearLogHandlers();
+});
+
+test('category log handler test - not match', (t) => {
+  let called = false;
+  const message = 'test log handler';
+  log.addLogHandler(() => {
+    called = true;
+  }, {
+    category: 'notFound',
+  });
+
+  log.info(message, arrayData);
+  t.is(called, false);
+  log.clearLogHandlers();
+});

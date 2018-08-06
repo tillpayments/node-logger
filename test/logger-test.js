@@ -111,6 +111,30 @@ test('build log string with boolean data', (t) => {
   t.is(logString, `${timestamp} [INFO] (main)\tfoo, true`);
 });
 
+test('build log string with object message', (t) => {
+  const objectData = { key: 'value', nestedData: { nestedValue: [1, 2, 3] } };
+  const logString = log.buildLogString({
+    date,
+    level: 'info',
+    category,
+    message: objectData,
+  });
+  /* eslint-disable-next-line quotes */
+  t.is(logString, `${timestamp} [INFO] (main)\tkey="value", nestedData={"nestedValue":[1,2,3]}`);
+});
+
+test('build log string with array message', (t) => {
+  const arrayData = ['foo', 'bar'];
+  const logString = log.buildLogString({
+    date,
+    level: 'info',
+    category,
+    message: arrayData,
+  });
+  /* eslint-disable-next-line quotes */
+  t.is(logString, `${timestamp} [INFO] (main)\t["foo","bar"]`);
+});
+
 test('build log string with object data', (t) => {
   const objectData = { key: 'value', nestedData: { nestedValue: [1, 2, 3] } };
   const logString = log.buildLogString({

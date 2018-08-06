@@ -18,7 +18,10 @@ LOG_LEVELS = ['all', 'debug', 'info', 'warn', 'error', 'fatal'];
 ```
 Default date display format
 ```
-`${date.getFullYear()}-${date.getMonth()}-${date.getDate()} ${date.toTimeString()}`;
+const leadingZero = value => `0${value}`.slice(-2);
+const getDateString = date => `${date.getFullYear()}-${leadingZero(date.getMonth() + 1)}-${leadingZero(date.getDate())}`;
+const getTimeString = date => `${date.toTimeString().match(/([\d:]+ [A-Z]+[\+-][0-9]+)/)[1]}`;
+const formatTimestamp = date => `${getDateString(date)} ${getTimeString(date)}`;
 ```
 
 ### Usage

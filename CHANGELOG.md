@@ -1,5 +1,8 @@
 # CHANGELOG
 
+### v1.0.4
+- Better error logging
+
 ### v1.0.3
 - Direct object/array log
 - Default date time format fixes 

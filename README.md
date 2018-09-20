@@ -66,6 +66,13 @@ log.info('info message');
 log.warn('warn message');
 log.error('error message');
 log.fatal('fatal message');
+
+// if error object is passed, logger will print stack trace
+log.error(new Error('error message'));
+log.error('logging error', new Error('error message'));
+
+// if you don't want stack trace, wrap the error in an object
+log.error('logging error message', { error: new Error('error message') });
 ```
 
 Override dateFormatter:
